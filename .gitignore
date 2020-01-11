@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/mboxd
+mboxd.so
+mboxd.dylib
+mboxd.dll
+mboxd.a
+mboxd.lib
+mboxd-test-*
+*.exe
+*.o
+*.obj
+*.lst
