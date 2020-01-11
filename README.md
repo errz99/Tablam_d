@@ -1,2 +1,2 @@
 # mBoxDe
-Desarrollo de MBox en lenguaje D a través de un ejemplo.
+Desarrollo de mBox en D a partir de un ejemplo. Más tarde lo convertiré en librería.
