@@ -13,7 +13,7 @@ import mbox;
 void main(string[] args) {
 
 	string[][] mbData = [
-		["Date", "Name", "URL", "Info"],
+		//["Date", "Name", "URL", "Info"],
 		["20190904", "Vodafone", "www.vodafone.com", "Mi cuenta en la web de Vodafone"],
 		["20191001", "micuenta", "gmail.com", "Cuenta de correo en gmail"],
 		["20190522", "BNK", "www.banco.com", "Pues eso, el banco y tal"],
@@ -31,6 +31,7 @@ void main(string[] args) {
 
 class MainWin : MainWindow {
 	Keymap keymap;
+	MBox mbox;
 
 	this(string[][] mbData) {
 		super("mBox Test");
@@ -39,8 +40,9 @@ class MainWin : MainWindow {
 		setDefaultSize(600, 400);
 		keymap = Keymap.getDefault();
 		addOnKeyPress(&onKeyPress);
+		mbox = new MBox(mbData, false);
 
-		add(new MainBox(mbData, this));
+		add(new MainBox(mbData, mbox, this));
 		showAll();
 	}
 
@@ -55,12 +57,18 @@ class MainWin : MainWindow {
 		switch (key) {
 			case "Up":
 				writeln("Key Up");
+				mbox.cursorUp();
 				break;
 			case "Down":
 				writeln("Key Down");
+				mbox.cursorDown();
 				break;
 			case "Escape":
-				mainQuit();
+				if (mbox.cursorIsActive()) {
+					mbox.cleanCursor();
+				} else {	
+					mainQuit();
+				}	
 				break;
 			case "Return":
 				writeln("Return");
@@ -70,6 +78,7 @@ class MainWin : MainWindow {
 				break;
 			case "F12":
 				writeln("F12");
+
 				break;
 			case "F11":
 				writeln("F11");
@@ -84,16 +93,17 @@ class MainWin : MainWindow {
 }
 
 class MainBox : Box {
-	this(string[][] mbData, MainWin mwin) {
+	this(string[][] mbData, MBox mbox, MainWin mwin) {
 		super(Orientation.VERTICAL, 0);
 
 		auto headText = new Label("Ejemplo");
 		headText.setMarginTop(8);
 		headText.setMarginBottom(8);
 		add(headText);
-
-		auto mbox = new MBox(mbData, true);
+		
 		add(mbox);
+		writeln(mbox.getRow(0));
+		//mbox.addRow(["hola", "ke pasa", "aqui", "hoy"]);
 
 		auto close = new Button("Close");
 		packEnd(close, false, false, 0);

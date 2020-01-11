@@ -1,4 +1,7 @@
 import std.stdio;
+import std.typecons;
+import std.conv;
+
 import gtk.Widget;
 import gtk.Box;
 import gtk.Label;
@@ -8,9 +11,23 @@ import gtk.Button;
 class MBox : Box {
 	private:
 	Label[][] _labels;
+	string[][] _data;
+	string[][] _datax;
+	int _position;
+	int _outPosition = -1;
+	int _lastPosition = -1;
+	string[2] headMarkup;
+	string[2] dataMarkup;
+	string[2] cursorMarkup;
 
 	public:
 	this(string[][] data, bool hasHead) {
+		if (hasHead == true) {
+			_outPosition++;
+		}
+		_position = _outPosition;
+		_lastPosition = _outPosition;
+
 		string hma = "<span><tt><b>";
 		string hmb = "</b></tt></span>";
 		string dma = "<span background=\"white\"><tt>";
@@ -18,16 +35,17 @@ class MBox : Box {
 		string cma = "<span foreground=\"white\" background=\"#6666dd\"><tt>";
 		string cmb = "</tt></span>";
 
-		string[2] headMarkup = [hma, hmb];
-		string[2] dataMarkup = [dma, dmb];
-		string[2] cursorMarkup = [cma, cmb];
+		headMarkup = [hma, hmb];
+		dataMarkup = [dma, dmb];
+		cursorMarkup = [cma, cmb];
 
-		string[][] datax = createDataX(data);
+		_data = data;
+		_datax = createDataX(data);
 
 		super(Orientation.VERTICAL, 4);
 		setHalign(Align.CENTER);
 
-		foreach (d; datax) {
+		foreach (d; _datax) {
 			auto row = new Box(Orientation.HORIZONTAL, 4);
 			add(row);
 			Label[] rowLabels;
@@ -45,10 +63,69 @@ class MBox : Box {
 
 		if (hasHead == true && _labels.length > 0) {
 			for (int i = 0; i < _labels[0].length; i++) {
-				_labels[0][i].setMarkup(headMarkup[0] ~ datax[0][i] ~ headMarkup[1]);
+				_labels[0][i].setMarkup(headMarkup[0] ~ _datax[0][i] ~ headMarkup[1]);
 			}
 		}
 	}
+
+	string[] getRow(int n) {
+		return _data[n];
+	}
+
+//	void addRow(string[] row) {
+//		writeln(row);
+//	}
+
+	void cursorDown() {
+		_lastPosition = _position;
+		_position++;
+		if (_position == _data.length) {
+			_position = _outPosition + 1;
+		}
+		updateCursor();
+	}
+
+	void cursorUp() {
+		_lastPosition = _position;
+		_position--;
+		if (_position < _outPosition + 1) {
+			_position = to!int(_data.length) - 1;
+		}
+		updateCursor();
+	}
+
+	void updateCursor() {
+		if (_position > _outPosition) {
+			for (int i = 0; i < _labels[0].length; i++) {
+				_labels[_position][i].setMarkup(
+					cursorMarkup[0] ~ _datax[_position][i] ~ cursorMarkup[1]);
+			}
+		}
+		if (_lastPosition > _outPosition) {
+			for (int i = 0; i < _labels[0].length; i++) {
+				_labels[_lastPosition][i].setMarkup(
+					dataMarkup[0] ~ _datax[_lastPosition][i] ~ dataMarkup[1]);
+			}
+		}
+	}
+	
+	bool cursorIsActive() {
+		if (_position > _outPosition) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	void cleanCursor() {
+		if (_position > _outPosition) {
+			for (int i = 0; i < _labels[0].length; i++) {
+				_labels[_position][i].setMarkup(
+					dataMarkup[0] ~ _datax[_position][i] ~ dataMarkup[1]);
+			}
+			_position = _outPosition;			
+		}
+	}						
 }
 
 string[][] createDataX(string[][] data) {
