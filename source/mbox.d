@@ -10,6 +10,7 @@ import gtk.Button;
 
 class MBox : Box {
 	private:
+	bool _hasHead;
 	Label[][] _labels;
 	string[][] _data;
 	string[][] _datax;
@@ -20,9 +21,47 @@ class MBox : Box {
 	string[2] dataMarkup;
 	string[2] cursorMarkup;
 
+	void createDatax() {
+		import std.array : replicate;
+		import std.uni : byGrapheme;
+		import std.range.primitives : walkLength;
+
+		if (_data.length == 0) {
+			return;
+		}
+
+		int separation = 1;
+		auto sep = " ".replicate(separation);
+
+		ulong[] max;
+		max.length = _data[0].length;
+
+		for (int j = 0; j < max.length; j++) {
+			for (int i = 0; i < _data.length; i++) {
+				auto elemgr = _data[i][j].byGrapheme;
+				if (elemgr.walkLength > max[j]) {
+					max[j] = elemgr.walkLength;
+				}
+			}
+		}
+
+		for (int i = 0; i < _data.length; i++) {
+			string[] row;
+
+			for (int j = 0; j < _data[i].length; j++) {
+				auto elemgr = _data[i][j].byGrapheme;
+				ulong grow = max[j] - elemgr.walkLength;
+				string elemx = sep ~ _data[i][j] ~ " ".replicate(grow) ~ sep;
+				row ~= elemx;
+			}
+			_datax ~= row;
+		}
+	}
+
 	public:
 	this(string[][] data, bool hasHead) {
-		if (hasHead == true) {
+		_hasHead = hasHead;
+		if (_hasHead == true) {
 			_outPosition++;
 		}
 		_position = _outPosition;
@@ -40,7 +79,7 @@ class MBox : Box {
 		cursorMarkup = [cma, cmb];
 
 		_data = data;
-		_datax = createDataX(data);
+		createDatax();
 
 		super(Orientation.VERTICAL, 4);
 		setHalign(Align.CENTER);
@@ -61,7 +100,7 @@ class MBox : Box {
 			_labels ~= rowLabels;
 		}
 
-		if (hasHead == true && _labels.length > 0) {
+		if (_hasHead == true && _labels.length > 0) {
 			for (int i = 0; i < _labels[0].length; i++) {
 				_labels[0][i].setMarkup(headMarkup[0] ~ _datax[0][i] ~ headMarkup[1]);
 			}
@@ -71,10 +110,6 @@ class MBox : Box {
 	string[] getRow(int n) {
 		return _data[n];
 	}
-
-//	void addRow(string[] row) {
-//		writeln(row);
-//	}
 
 	void cursorDown() {
 		_lastPosition = _position;
@@ -108,7 +143,7 @@ class MBox : Box {
 			}
 		}
 	}
-	
+
 	bool cursorIsActive() {
 		if (_position > _outPosition) {
 			return true;
@@ -116,54 +151,26 @@ class MBox : Box {
 			return false;
 		}
 	}
-	
-	void cleanCursor() {
+
+	void clearCursor() {
 		if (_position > _outPosition) {
 			for (int i = 0; i < _labels[0].length; i++) {
 				_labels[_position][i].setMarkup(
 					dataMarkup[0] ~ _datax[_position][i] ~ dataMarkup[1]);
 			}
-			_position = _outPosition;			
-		}
-	}						
-}
-
-string[][] createDataX(string[][] data) {
-	import std.array : replicate;
-	import std.uni : byGrapheme;
-	import std.range.primitives : walkLength;
-
-	string[][] datax;
-	if (data.length == 0) {
-		return datax;
-	}
-
-	int separation = 1;
-	auto sep = " ".replicate(separation);
-
-	ulong[] max;
-	max.length = data[0].length;
-
-	for (int j = 0; j < max.length; j++) {
-		for (int i = 0; i < data.length; i++) {
-			auto elemgr = data[i][j].byGrapheme;
-			if (elemgr.walkLength > max[j]) {
-				max[j] = elemgr.walkLength;
-			}
+			_position = _outPosition;
 		}
 	}
 
-	for (int i = 0; i < data.length; i++) {
-		string[] row;
-
-		for (int j = 0; j < data[i].length; j++) {
-			auto elemgr = data[i][j].byGrapheme;
-			ulong grow = max[j] - elemgr.walkLength;
-			string elemx = sep ~ data[i][j] ~ " ".replicate(grow) ~ sep;
-			row ~= elemx;
+	string[] activeData() {
+		auto pos = _position;
+		if (_hasHead == true && _position == _outPosition) {
+			pos = -1;
 		}
-		datax ~= row;
+		if (pos >= 0) {
+			return _data[pos];
+		} else {
+			return [];
+		}
 	}
-
-	return datax;
 }

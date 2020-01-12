@@ -13,7 +13,7 @@ import mbox;
 void main(string[] args) {
 
 	string[][] mbData = [
-		//["Date", "Name", "URL", "Info"],
+		["Date", "Name", "URL", "Info"],
 		["20190904", "Vodafone", "www.vodafone.com", "Mi cuenta en la web de Vodafone"],
 		["20191001", "micuenta", "gmail.com", "Cuenta de correo en gmail"],
 		["20190522", "BNK", "www.banco.com", "Pues eso, el banco y tal"],
@@ -40,7 +40,7 @@ class MainWin : MainWindow {
 		setDefaultSize(600, 400);
 		keymap = Keymap.getDefault();
 		addOnKeyPress(&onKeyPress);
-		mbox = new MBox(mbData, false);
+		mbox = new MBox(mbData, true);
 
 		add(new MainBox(mbData, mbox, this));
 		showAll();
@@ -56,22 +56,20 @@ class MainWin : MainWindow {
 
 		switch (key) {
 			case "Up":
-				writeln("Key Up");
 				mbox.cursorUp();
 				break;
 			case "Down":
-				writeln("Key Down");
 				mbox.cursorDown();
 				break;
 			case "Escape":
 				if (mbox.cursorIsActive()) {
-					mbox.cleanCursor();
-				} else {	
+					mbox.clearCursor();
+				} else {
 					mainQuit();
-				}	
+				}
 				break;
 			case "Return":
-				writeln("Return");
+				writeln(mbox.activeData());
 				break;
 			case "Delete":
 				writeln("Delete");
@@ -100,10 +98,9 @@ class MainBox : Box {
 		headText.setMarginTop(8);
 		headText.setMarginBottom(8);
 		add(headText);
-		
+
 		add(mbox);
 		writeln(mbox.getRow(0));
-		//mbox.addRow(["hola", "ke pasa", "aqui", "hoy"]);
 
 		auto close = new Button("Close");
 		packEnd(close, false, false, 0);
