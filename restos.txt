@@ -1,0 +1,49 @@
+/*
+			//ListG children = this.getChildren();
+			//auto box = children.nthData(_position);
+			//Widget[] boxes = children.toArray();
+
+
+			//auto box = children.nthData(_position);
+			//cast(Widget) box.destroy();
+			//cast(Widget[]) children;
+
+			//this.remove(cast(Widget) box);
+			//this.remove(cast(Widget) children.nth(_position));
+
+			//foreach(Widget child.tupleof; children) {
+			//	this.remove(child);
+			//}
+
+			//auto box = children.nthData(_position);
+
+			//this.destroy(box.data);
+
+			//this.setChildren(children);
+
+			//Box[] boxes = children.toArray();
+			//children.free();
+
+			//this.remove(children.nth(_position));
+			//this.remove(_position);
+
+			//this.removeAll();
+
+
+			for (int j = 0; j < _data[i].length; j++) {
+				row ~= newElemx(_data[i][j], max[j]);
+//				auto elemgr = _data[i][j].byGrapheme;
+//				ulong grow = max[j] - elemgr.walkLength;
+//				string elemx = sep ~ _data[i][j] ~ " ".replicate(grow) ~ sep;
+				//row ~= elemx;
+			}
+
+		for (int j = 0; j < rdata.length; j++) {
+			row ~= newElemx(rdata[j], max[j]);
+			//auto elemgr = rdata[j].byGrapheme;
+			//ulong grow = max[j] - elemgr.walkLength;
+			//string elemx = sep ~ rdata[j] ~ " ".replicate(grow) ~ sep;
+			//row ~= elemx;
+		}
+
+*/
