@@ -190,21 +190,24 @@ public:
 		return sep ~ elem ~ " ".replicate(grow) ~ sep;
 	}
 
+	private void updateMax(string[][] data) {
+		for (int j = 0; j < max.length; j++) {
+			for (int i = 0; i < data.length; i++) {
+				auto elemgr = data[i][j].byGrapheme;
+				if (elemgr.walkLength > max[j]) {
+					max[j] = elemgr.walkLength;
+				}
+			}
+		}
+	}
+
 	private void createDatax() {
 		if (_data.length == 0) {
 			return;
 		}
 
 		max.length = _data[0].length;
-
-		for (int j = 0; j < max.length; j++) {
-			for (int i = 0; i < _data.length; i++) {
-				auto elemgr = _data[i][j].byGrapheme;
-				if (elemgr.walkLength > max[j]) {
-					max[j] = elemgr.walkLength;
-				}
-			}
-		}
+		updateMax(_data);
 
 		for (int i = 0; i < _data.length; i++) {
 			string[] row;
@@ -219,17 +222,9 @@ public:
 	private string[] dataxForRow(string[] rdata) {
 		auto sep = " ".replicate(separation);
 		int[] changedMax;
-
-		for (int j = 0; j < max.length; j++) {
-			auto elemgr = rdata[j].byGrapheme;
-			if (elemgr.walkLength > max[j]) {
-				max[j] = elemgr.walkLength;
-				changedMax ~= j;
-			}
-		}
+		updateMax([rdata]);
 
 		string[] row;
-
 		for (int j = 0; j < rdata.length; j++) {
 			row ~= newElemx(rdata[j], max[j]);
 		}

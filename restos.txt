@@ -47,3 +47,23 @@
 		}
 
 */
+
+
+//		for (int j = 0; j < max.length; j++) {
+//			for (int i = 0; i < _data.length; i++) {
+//				auto elemgr = _data[i][j].byGrapheme;
+//				if (elemgr.walkLength > max[j]) {
+//					max[j] = elemgr.walkLength;
+//				}
+//			}
+//		}
+
+
+//		for (int j = 0; j < max.length; j++) {
+//			auto elemgr = rdata[j].byGrapheme;
+//			if (elemgr.walkLength > max[j]) {
+//				max[j] = elemgr.walkLength;
+//				changedMax ~= j;
+//			}
+//		}
+
