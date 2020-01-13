@@ -76,3 +76,14 @@
 //					labels[j][cm].setMarkup(dataMarkup[0] ~ elemx ~ dataMarkup[1]);
 //				}
 
+//			auto dataTemp = _data;
+//			auto dataxTemp = _datax;
+//			reverse(dataTemp);
+//			reverse(dataxTemp);
+//			_data = [];
+//			_data ~= dataTemp[$-1];
+//			_data ~= dataTemp[0..$-1];
+//			_datax = [];
+//			_datax ~= dataxTemp[$-1];
+//			_datax ~= dataxTemp[0..$-1];
+

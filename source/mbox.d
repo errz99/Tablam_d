@@ -159,16 +159,8 @@ public:
 
 	void reverseData() {
 		if (_hasHead) {
-			auto dataTemp = _data;
-			auto dataxTemp = _datax;
-			reverse(dataTemp);
-			reverse(dataxTemp);
-			_data = [];
-			_data ~= dataTemp[$-1];
-			_data ~= dataTemp[0..$-1];
-			_datax = [];
-			_datax ~= dataxTemp[$-1];
-			_datax ~= dataxTemp[0..$-1];
+			reverse(_data[1..$]);
+			reverse(_datax[1..$]);
 
 		} else {
 			reverse(_data);
