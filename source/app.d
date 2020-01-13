@@ -42,6 +42,17 @@ class MainWin : MainWindow {
 		addOnKeyPress(&onKeyPress);
 		mbox = new MBox(mbData, true);
 
+		mbox.addOnButtonPress(delegate bool(Event e, Widget w) {
+			auto eb = e.button();
+
+			if (e.isDoubleClick(eb)) {
+				writeln("mbox double check: get row data");
+			} else {
+				writeln("mbox single check: get position");
+			}
+			return true;
+		});
+
 		add(new MainBox(mbData, mbox, this));
 		showAll();
 	}
@@ -77,7 +88,7 @@ class MainWin : MainWindow {
 			case "F12":
 				writeln("F12");
 				mbox.addRow(
-					["2019/05/14", "Mi veloz router", "ñ", "Acceso all router de casa"]);
+					["2019/05/14", "Mi veloz router", "ñññ", "Acceso all router de casa"]);
 				break;
 			case "F11":
 				mbox.reverseData();

@@ -9,6 +9,7 @@ import gtk.Label;
 import gtk.EventBox;
 import gtk.Button;
 import glib.ListG;
+import gdk.Event;
 
 import std.array : replicate;
 import std.uni : byGrapheme;
@@ -53,14 +54,14 @@ public:
 
 		_data = data;
 		//max.length = _data[0].length;
-		createDatax();
+		initialDatax();
 
 		super(Orientation.VERTICAL, hsep);
 		setHalign(Align.CENTER);
 		setBorderWidth(8);
 
-		foreach (d; _datax) { // _datax
-			processRow(d);
+		foreach (idx, ref d; _datax) {
+			processRow(d, cast(int)idx);
 			//addRow(d);
 		}
 
@@ -87,7 +88,6 @@ public:
 
 			updateCursor();
 		}
-
 		writeln("down ", position);
 	}
 
@@ -100,7 +100,6 @@ public:
 		if (position >= 0) {
 			updateCursor();
 		}
-
 		writeln("up   ", position);
 	}
 
@@ -127,6 +126,7 @@ public:
 		if (_hasHead == true && position == outPosition) {
 			pos = -1;
 		}
+
 		if (pos >= 0) {
 			return _data[pos];
 		} else {
@@ -136,10 +136,10 @@ public:
 
 	void addRow(string[] rdata) {
 		auto rdatax = dataxForRow(rdata);
-		_datax ~= rdatax;
-		_data ~= rdata;
+		_datax ~= rdatax.dup;
+		_data ~= rdata.dup;
 
-		processRow(rdatax);
+		processRow(rdatax, cast(int)_data.length - 1);
 		showAll();
 	}
 
@@ -151,6 +151,10 @@ public:
 			_datax = _datax[0..position] ~ _datax[position + 1..$];
 			labels = labels[0..position] ~ labels[position + 1..$];
 			rows = rows[0..position] ~ rows[position + 1..$];
+
+			for (int i = 0; i < rows.length; i++) {
+				rows[i].setName(to!string(i));
+			}
 
 			position = outPosition;
 			lastPosition = outPosition;
@@ -174,12 +178,35 @@ public:
 		}
 	}
 
-	private void processRow(string[] rdatax) {
+	private void processRow(ref string[] rdatax, int idx) {
 		auto row = new Box(Orientation.HORIZONTAL, hsep);
+		row.setName(to!string(idx));
 		add(row);
-		Label[] rowLabels;
 
-		foreach (elemx; rdatax) {
+		addOnMotionNotify(delegate bool(Event e, Widget w) {
+			//writeln("motion notify");
+			return true;
+		});
+
+		row.addOnButtonPress(delegate bool(Event e, Widget w) {
+			auto eb = e.button();
+			auto name = row.getName();
+
+			if (to!int(name) > outPosition) {
+				if (e.isDoubleClick(eb)) {
+				} else if (position != to!int(name)) {
+					lastPosition = position;
+					position = to!int(name);
+					updateCursor();
+				}
+			} else {
+				//writeln("button pressed at header");
+			}
+			return false;
+		});
+
+		Label[] rowLabels;
+		foreach (ref elemx; rdatax) {
 			auto ebox = new EventBox();
 			row.add(ebox);
 			auto label = new Label(elemx);
@@ -206,11 +233,10 @@ public:
 		}
 	}
 
-	private string newElemx(string elem, ulong max) {
+	private string newElemx(ref string elem, ulong max) {
 		auto sep = " ".replicate(separation);
 		auto elemgr = elem.byGrapheme;
 		ulong grow = max - elemgr.walkLength;
-
 		return sep ~ elem ~ " ".replicate(grow) ~ sep;
 	}
 
@@ -229,7 +255,7 @@ public:
 		return changedMax;
 	}
 
-	private void createDatax() {
+	private void initialDatax() {
 		if (_data.length == 0) {
 			return;
 		}
@@ -248,7 +274,7 @@ public:
 		}
 	}
 
-	private string[] dataxForRow(string[] rdata) {
+	private string[] dataxForRow(ref string[] rdata) {
 		auto sep = " ".replicate(separation);
 		int[] changedMax = updateMax([rdata]);
 
@@ -269,11 +295,10 @@ public:
 				++j;
 			}
 		}
-
 		return row;
 	}
 
-	void applyMarkup(int i, int j, string elemx) {
+	private void applyMarkup(int i, int j, ref string elemx) {
 		if (_hasHead == true && i == 0) {
 			labels[i][j].setMarkup(headMarkup[0] ~ elemx ~ headMarkup[1]);
 		} else if (i == position) {

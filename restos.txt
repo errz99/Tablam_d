@@ -87,3 +87,17 @@
 //			_datax ~= dataxTemp[$-1];
 //			_datax ~= dataxTemp[0..$-1];
 
+		auto n = children.length;
+		for (int i = start; i < n; i++) {
+			reorderChild(children[i + start], cast(int) n - 1 + start);
+			--n;
+		}	
+
+
+	void activeAndLastMarkup() {
+		for (int j = 0; j < _data[0].length; j++) {
+			labels[position][j].setMarkup(cursorMarkup[0] ~ _datax[position][j] ~ cursorMarkup[1]);
+			labels[lastPosition][j].setMarkup(dataMarkup[0] ~ _datax[lastPosition][j] ~ dataMarkup[1]);
+		}
+	}
+
