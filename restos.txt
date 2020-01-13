@@ -67,3 +67,12 @@
 //			}
 //		}
 
+
+//				if (_hasHead && j == 0) {
+//					labels[j][cm].setMarkup(headMarkup[0] ~ elemx ~ headMarkup[1]);
+//				} else if (j == position) {
+//					labels[j][cm].setMarkup(cursorMarkup[0] ~ elemx ~ cursorMarkup[1]);
+//				} else {
+//					labels[j][cm].setMarkup(dataMarkup[0] ~ elemx ~ dataMarkup[1]);
+//				}
+

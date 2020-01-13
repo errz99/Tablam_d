@@ -1,6 +1,7 @@
 import std.stdio;
 import std.typecons;
 import std.conv;
+import std.algorithm;
 
 import gtk.Widget;
 import gtk.Box;
@@ -16,13 +17,13 @@ import std.range.primitives : walkLength;
 class MBox : Box {
 private:
 	bool _hasHead;
-	Box[] _rows;
-	Label[][] _labels;
 	string[][] _data;
 	string[][] _datax;
-	int _position;
-	int _outPosition = -1;
-	int _lastPosition = -1;
+	Label[][] labels;
+	Box[] rows;
+	int position;
+	int outPosition = -1;
+	int lastPosition = -1;
 	string[2] headMarkup;
 	string[2] dataMarkup;
 	string[2] cursorMarkup;
@@ -34,10 +35,10 @@ public:
 	this(string[][] data, bool hasHead) {
 		_hasHead = hasHead;
 		if (_hasHead == true) {
-			_outPosition++;
+			outPosition++;
 		}
-		_position = _outPosition;
-		_lastPosition = _outPosition;
+		position = outPosition;
+		lastPosition = outPosition;
 
 		string hma = "<span><tt><b>";
 		string hmb = "</b></tt></span>";
@@ -51,19 +52,21 @@ public:
 		cursorMarkup = [cma, cmb];
 
 		_data = data;
+		//max.length = _data[0].length;
 		createDatax();
 
 		super(Orientation.VERTICAL, hsep);
 		setHalign(Align.CENTER);
 		setBorderWidth(8);
 
-		foreach (d; _datax) {
+		foreach (d; _datax) { // _datax
 			processRow(d);
+			//addRow(d);
 		}
 
-		if (_hasHead == true && _labels.length > 0) {
-			for (int i = 0; i < _labels[0].length; i++) {
-				_labels[0][i].setMarkup(headMarkup[0] ~ _datax[0][i] ~ headMarkup[1]);
+		if (_hasHead == true && labels.length > 0) {
+			for (int i = 0; i < labels[0].length; i++) {
+				labels[0][i].setMarkup(headMarkup[0] ~ _datax[0][i] ~ headMarkup[1]);
 			}
 		}
 	}
@@ -73,29 +76,36 @@ public:
 	}
 
 	void cursorDown() {
-		_lastPosition = _position;
-		_position++;
-		if (_position == _data.length) {
-			_position = _outPosition + 1;
-		}
-		updateCursor();
+		if ((_hasHead && _data.length > 1) || (!_hasHead && _data.length > 0)) {
+			lastPosition = position;
 
-		writeln("down ", _position);
+			if (position < _data.length - 1) {
+				position++;
+			} else {
+				position = outPosition + 1;
+			}
+
+			updateCursor();
+		}
+
+		writeln("down ", position);
 	}
 
 	void cursorUp() {
-		_lastPosition = _position;
-		_position--;
-		if (_position < _outPosition + 1) {
-			_position = to!int(_data.length) - 1;
+		lastPosition = position;
+		position--;
+		if (position < outPosition + 1) {
+			position = to!int(_data.length) - 1;
 		}
-		updateCursor();
+		if (position >= 0) {
+			updateCursor();
+		}
 
-		writeln("up   ", _position);
+		writeln("up   ", position);
 	}
 
 	bool cursorIsActive() {
-		if (_position > _outPosition) {
+		if (position > outPosition) {
 			return true;
 		} else {
 			return false;
@@ -103,18 +113,18 @@ public:
 	}
 
 	void clearCursor() {
-		if (_position > _outPosition) {
-			for (int i = 0; i < _labels[0].length; i++) {
-				_labels[_position][i].setMarkup(
-					dataMarkup[0] ~ _datax[_position][i] ~ dataMarkup[1]);
+		if (position > outPosition) {
+			for (int i = 0; i < labels[0].length; i++) {
+				labels[position][i].setMarkup(
+					dataMarkup[0] ~ _datax[position][i] ~ dataMarkup[1]);
 			}
-			_position = _outPosition;
+			position = outPosition;
 		}
 	}
 
 	string[] activeData() {
-		auto pos = _position;
-		if (_hasHead == true && _position == _outPosition) {
+		auto pos = position;
+		if (_hasHead == true && position == outPosition) {
 			pos = -1;
 		}
 		if (pos >= 0) {
@@ -134,28 +144,50 @@ public:
 	}
 
 	void deleteActiveRow() {
-		if ((_hasHead && _position > 0) || (!_hasHead && _position >= 0)) {
-			_data = _data[0.._position - 1] ~ _data[_position..$];
-			_datax = _datax[0.._position - 1] ~ _datax[_position..$];
-			_labels = _labels[0.._position - 1] ~ _labels[_position..$];
+		if ((_hasHead && position > 0) || (!_hasHead && position >= 0)) {
+			children[position].destroy();
 
-			_rows[_position].destroy();
-			_rows = _rows[0.._position - 1] ~ _rows[_position..$];
+			_data = _data[0..position] ~ _data[position + 1..$];
+			_datax = _datax[0..position] ~ _datax[position + 1..$];
+			labels = labels[0..position] ~ labels[position + 1..$];
+			rows = rows[0..position] ~ rows[position + 1..$];
 
-			_position = _outPosition;
-			_lastPosition = _outPosition;
-
-			writeln("\n", _data);
-			writeln("\n", _data.length, _datax.length, _labels.length, _rows.length, _position);
+			position = outPosition;
+			lastPosition = outPosition;
 		}
 	}
 
-	private void processRow(string[] rdata) {
+	void reverseData() {
+		if (_hasHead) {
+			auto dataTemp = _data;
+			auto dataxTemp = _datax;
+			reverse(dataTemp);
+			reverse(dataxTemp);
+			_data = [];
+			_data ~= dataTemp[$-1];
+			_data ~= dataTemp[0..$-1];
+			_datax = [];
+			_datax ~= dataxTemp[$-1];
+			_datax ~= dataxTemp[0..$-1];
+
+		} else {
+			reverse(_data);
+			reverse(_datax);
+		}
+
+		for (int i = 0; i < labels.length; i++) {
+			for (int j = 0; j < labels[i].length; j++) {
+				applyMarkup(i, j, _datax[i][j]);
+			}
+		}
+	}
+
+	private void processRow(string[] rdatax) {
 		auto row = new Box(Orientation.HORIZONTAL, hsep);
 		add(row);
 		Label[] rowLabels;
 
-		foreach (elemx; rdata) {
+		foreach (elemx; rdatax) {
 			auto ebox = new EventBox();
 			row.add(ebox);
 			auto label = new Label(elemx);
@@ -163,21 +195,21 @@ public:
 			ebox.add(label);
 			rowLabels ~= label;
 		}
-		_rows ~= row;
-		_labels ~= rowLabels;
+		rows ~= row;
+		labels ~= rowLabels;
 	}
 
 	private void updateCursor() {
-		if (_position > _outPosition) {
-			for (int i = 0; i < _labels[0].length; i++) {
-				_labels[_position][i].setMarkup(
-					cursorMarkup[0] ~ _datax[_position][i] ~ cursorMarkup[1]);
+		if (position > outPosition) {
+			for (int i = 0; i < labels[0].length; i++) {
+				labels[position][i].setMarkup(
+					cursorMarkup[0] ~ _datax[position][i] ~ cursorMarkup[1]);
 			}
 		}
-		if (_lastPosition > _outPosition) {
-			for (int i = 0; i < _labels[0].length; i++) {
-				_labels[_lastPosition][i].setMarkup(
-					dataMarkup[0] ~ _datax[_lastPosition][i] ~ dataMarkup[1]);
+		if (lastPosition > outPosition) {
+			for (int i = 0; i < labels[0].length; i++) {
+				labels[lastPosition][i].setMarkup(
+					dataMarkup[0] ~ _datax[lastPosition][i] ~ dataMarkup[1]);
 			}
 		}
 	}
@@ -212,14 +244,15 @@ public:
 
 		max.length = _data[0].length;
 		updateMax(_data);
-
-		for (int i = 0; i < _data.length; i++) {
+		int i;
+		while (i < _data.length) {
 			string[] row;
 
 			for (int j = 0; j < _data[i].length; j++) {
 				row ~= newElemx(_data[i][j], max[j]);
 			}
 			_datax ~= row;
+			++i;
 		}
 	}
 
@@ -234,23 +267,27 @@ public:
 
 		foreach (cm; changedMax) {
 			writeln(cm);
-
-			for (int j = 0; j < _data.length; j++) {
+			int j;
+			while (j < _data.length) {
 				auto elemgr = _data[j][cm].byGrapheme;
 				ulong grow = max[cm] - elemgr.walkLength;
 				string elemx = sep ~ _data[j][cm] ~ " ".replicate(grow) ~ sep;
 				_datax[j][cm] = elemx;
-
-				if (_hasHead && j == 0) {
-					_labels[j][cm].setMarkup(headMarkup[0] ~ elemx ~ headMarkup[1]);
-				} else if (j == _position) {
-					_labels[j][cm].setMarkup(cursorMarkup[0] ~ elemx ~ cursorMarkup[1]);
-				} else {
-					_labels[j][cm].setMarkup(dataMarkup[0] ~ elemx ~ dataMarkup[1]);
-				}
+				applyMarkup(j, cm, elemx);
+				++j;
 			}
 		}
 
 		return row;
+	}
+
+	void applyMarkup(int i, int j, string elemx) {
+		if (_hasHead == true && i == 0) {
+			labels[i][j].setMarkup(headMarkup[0] ~ elemx ~ headMarkup[1]);
+		} else if (i == position) {
+			labels[i][j].setMarkup(cursorMarkup[0] ~ elemx ~ cursorMarkup[1]);
+		} else {
+			labels[i][j].setMarkup(dataMarkup[0] ~ elemx ~ dataMarkup[1]);
+		}
 	}
 }

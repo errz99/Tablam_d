@@ -80,7 +80,7 @@ class MainWin : MainWindow {
 					["2019/05/14", "Mi veloz router", "ñ", "Acceso all router de casa"]);
 				break;
 			case "F11":
-				writeln("F11");
+				mbox.reverseData();
 				break;
 			default:
 				writeln("New: ", key);
