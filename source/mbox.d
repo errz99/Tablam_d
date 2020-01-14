@@ -183,11 +183,6 @@ public:
 		row.setName(to!string(idx));
 		add(row);
 
-		addOnMotionNotify(delegate bool(Event e, Widget w) {
-			//writeln("motion notify");
-			return true;
-		});
-
 		row.addOnButtonPress(delegate bool(Event e, Widget w) {
 			auto eb = e.button();
 			auto name = row.getName();

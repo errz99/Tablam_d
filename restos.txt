@@ -91,7 +91,7 @@
 		for (int i = start; i < n; i++) {
 			reorderChild(children[i + start], cast(int) n - 1 + start);
 			--n;
-		}	
+		}
 
 
 	void activeAndLastMarkup() {
@@ -100,4 +100,31 @@
 			labels[lastPosition][j].setMarkup(dataMarkup[0] ~ _datax[lastPosition][j] ~ dataMarkup[1]);
 		}
 	}
+
+		addEvents(2097152); // SCROLL_MASK
+
+		addOnScroll(delegate bool(Event e, Widget w) {
+			writeln("scroll");
+//			auto n = to!int(row.getName());
+//			if (n != position) {
+//				lastPosition = position;
+//				position = n;
+//				updateCursor();
+//			}
+			return true;
+		});
+
+
+		//row.addEvents(32); // BUTTON1_MOTION_MASK
+
+//		row.addOnMotionNotify(delegate bool(Event e, Widget w) {
+//			writeln("motion notify");
+//			auto n = to!int(row.getName());
+//			if (n != position) {
+//				lastPosition = position;
+//				position = n;
+//				updateCursor();
+//			}
+//			return true;
+//		});
 

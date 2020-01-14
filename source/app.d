@@ -42,6 +42,11 @@ class MainWin : MainWindow {
 		addOnKeyPress(&onKeyPress);
 		mbox = new MBox(mbData, true);
 
+		addOnScroll(delegate bool(Event e, Widget w) {
+			writeln("scroll event");
+			return true;
+		});
+
 		mbox.addOnButtonPress(delegate bool(Event e, Widget w) {
 			auto eb = e.button();
 
