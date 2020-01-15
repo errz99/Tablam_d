@@ -2,6 +2,9 @@ import std.stdio;
 import std.typecons;
 import std.conv;
 import std.algorithm;
+import std.uni : byGrapheme;
+import std.array : replicate;
+import std.range.primitives : walkLength;
 
 import gtk.Widget;
 import gtk.Box;
@@ -10,10 +13,6 @@ import gtk.EventBox;
 import gtk.Button;
 import glib.ListG;
 import gdk.Event;
-
-import std.array : replicate;
-import std.uni : byGrapheme;
-import std.range.primitives : walkLength;
 
 class MBox : Box {
 private:
@@ -139,13 +138,14 @@ public:
 		_datax ~= rdatax.dup;
 		_data ~= rdata.dup;
 
-		processRow(rdatax, cast(int)_data.length - 1);
+		processRow(_datax[$-1], cast(int)_data.length - 1);
 		showAll();
 	}
 
 	void deleteActiveRow() {
-		if ((_hasHead && position > 0) || (!_hasHead && position >= 0)) {
+		if (rows.length > outPosition + 1) {
 			children[position].destroy();
+			children = children[0..position] ~ children[position + 1..$];
 
 			_data = _data[0..position] ~ _data[position + 1..$];
 			_datax = _datax[0..position] ~ _datax[position + 1..$];
@@ -156,8 +156,20 @@ public:
 				rows[i].setName(to!string(i));
 			}
 
-			position = outPosition;
-			lastPosition = outPosition;
+			if (rows.length == outPosition + 1) {
+				position = outPosition;
+			} else if (position == rows.length) {
+				position--;
+			}
+
+			if (position > outPosition) {
+				for (int i = 0; i < labels[0].length; i++) {
+					labels[position][i].setMarkup(
+						cursorMarkup[0] ~ _datax[position][i] ~ cursorMarkup[1]);
+				}
+			}
+
+			writeln("pos: ", position, " last: ", lastPosition);
 		}
 	}
 
@@ -214,16 +226,16 @@ public:
 	}
 
 	private void updateCursor() {
-		if (position > outPosition) {
-			for (int i = 0; i < labels[0].length; i++) {
-				labels[position][i].setMarkup(
-					cursorMarkup[0] ~ _datax[position][i] ~ cursorMarkup[1]);
-			}
-		}
 		if (lastPosition > outPosition) {
 			for (int i = 0; i < labels[0].length; i++) {
 				labels[lastPosition][i].setMarkup(
 					dataMarkup[0] ~ _datax[lastPosition][i] ~ dataMarkup[1]);
+			}
+		}
+		if (position > outPosition) {
+			for (int i = 0; i < labels[0].length; i++) {
+				labels[position][i].setMarkup(
+					cursorMarkup[0] ~ _datax[position][i] ~ cursorMarkup[1]);
 			}
 		}
 	}

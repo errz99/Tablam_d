@@ -91,7 +91,6 @@ class MainWin : MainWindow {
 				mbox.deleteActiveRow();
 				break;
 			case "F12":
-				writeln("F12");
 				mbox.addRow(
 					["2019/05/14", "Mi veloz router", "ñññ", "Acceso all router de casa"]);
 				break;

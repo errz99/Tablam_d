@@ -128,3 +128,17 @@
 //			return true;
 //		});
 
+
+			foreach (ref child; children) {
+				child.destroy();
+			}
+			children = [];
+
+			foreach (row; rows) {
+				children ~= row;
+				add(row);
+			}
+
+		//if ((_hasHead && rows.length > start) || (!_hasHead && rows.length > start)) {
+
+
