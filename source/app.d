@@ -1,4 +1,6 @@
 import std.stdio;
+import std.conv;
+import std.random;
 
 import gtk.MainWindow;
 import gtk.Widget;
@@ -32,6 +34,7 @@ void main(string[] args) {
 class MainWin : MainWindow {
 	Keymap keymap;
 	MBox mbox;
+	auto rnd = Random(42);
 
 	this(string[][] mbData) {
 		super("mBox Test");
@@ -52,8 +55,14 @@ class MainWin : MainWindow {
 
 			if (e.isDoubleClick(eb)) {
 				writeln("mbox double check: get row data");
+				if (mbox.activeData() != []) {
+					writeln(mbox.activeData());
+				} else {
+					writeln("no data active");
+				}
+
 			} else {
-				writeln("mbox single check: get position");
+				//writeln("mbox single check: get position");
 			}
 			return true;
 		});
@@ -85,16 +94,25 @@ class MainWin : MainWindow {
 				}
 				break;
 			case "Return":
-				writeln(mbox.activeData());
+				if (mbox.activeData() != []) {
+					writeln(mbox.activeData());
+				} else {
+					writeln("no data active");
+				}
 				break;
 			case "Delete":
 				mbox.deleteActiveRow();
 				break;
-			case "F12":
-				mbox.addRow(
-					["2019/05/14", "Mi veloz router", "ñññ", "Acceso all router de casa"]);
+			case "Insert":
+				auto r = uniform(0, 255, rnd);
+				auto y = uniform(2000, 2020, rnd);
+				auto m = uniform(1, 13, rnd);
+				auto d = uniform(1, 29, rnd);
+				auto date = to!string(y) ~ "/" ~ to!string(m) ~ "/" ~ to!string(d);
+				auto url = "www." ~ to!string(r) ~ ".com";
+				mbox.addRow([date, "Mi veloz router", url, "Acceso all router de casa"]);
 				break;
-			case "F11":
+			case "F12":
 				mbox.reverseData();
 				break;
 			default:

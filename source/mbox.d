@@ -120,7 +120,7 @@ public:
 		}
 	}
 
-	string[] activeData() {
+	string[] activeData_() {
 		auto pos = position;
 		if (_hasHead == true && position == outPosition) {
 			pos = -1;
@@ -128,6 +128,14 @@ public:
 
 		if (pos >= 0) {
 			return _data[pos];
+		} else {
+			return [];
+		}
+	}
+
+	string[] activeData() {
+		if (position > outPosition) {
+			return _data[position];
 		} else {
 			return [];
 		}
