@@ -27,10 +27,10 @@ private:
 	string[2] headMarkup;
 	string[2] dataMarkup;
 	string[2] cursorMarkup;
-	int hsep = 4;
+	int hsep = 3;
 	ulong[] max;
 	int[] changedMax;
-	int separation = 2;
+	int separation = 1;
 	auto sep = " ";
 
 public:
@@ -64,6 +64,18 @@ public:
 		foreach (d; data) {
 			addRow(d);
 		}
+	}
+
+	void setHeadMarkup(string a, string b) {
+		headMarkup = [a, b];
+	}
+
+	void setDataMarkup(string a, string b) {
+		dataMarkup = [a, b];
+	}
+
+	void setCursorMarkup(string a, string b) {
+		cursorMarkup = [a, b];
 	}
 
 	void cursorDown() {
@@ -126,9 +138,9 @@ public:
 			rbs = rbs[0..position] ~ rbs[position + 1..$];
 			data = data[0..position] ~ data[position + 1..$];
 			datax = datax[0..position] ~ datax[position + 1..$];
-			
+
 			removeRow(position);
-			
+
 			for (int i = 0; i < rbs.length; i++) {
 				rbs[i].setName(to!string(i));
 			}

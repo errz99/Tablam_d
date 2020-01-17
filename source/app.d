@@ -12,6 +12,13 @@ import gdk.Event;
 import gdk.Keymap;
 import mbox;
 
+string hma = "<span foreground=\"black\" background=\"white\" size=\"medium\"><tt><b>";
+string hmb = "</b></tt></span>";
+string dma = "<span foreground=\"blue\" background=\"white\" size=\"medium\"><tt>";
+string dmb = "</tt></span>";
+string cma = "<span foreground=\"black\" background=\"yellow\" size=\"medium\"><tt>";
+string cmb = "</tt></span>";
+
 void main(string[] args) {
 
 	string[][] mbData = [
@@ -44,6 +51,7 @@ class MainWin : MainWindow {
 		keymap = Keymap.getDefault();
 		addOnKeyPress(&onKeyPress);
 		mbox = new MBox(mbData, true);
+		mbox.setCursorMarkup(cma, cmb);
 
 		addOnScroll(delegate bool(Event e, Widget w) {
 			writeln("scroll event");
