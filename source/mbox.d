@@ -7,6 +7,7 @@ import std.array : replicate;
 import std.range.primitives : walkLength;
 
 import gtk.Widget;
+import gtk.Grid;
 import gtk.Box;
 import gtk.Label;
 import gtk.EventBox;
@@ -14,7 +15,7 @@ import gtk.Button;
 import glib.ListG;
 import gdk.Event;
 
-class MBox : Box {
+class MBox : Grid {
 private:
 	bool _hasHead;
 	RowBox[] rbs;
@@ -26,7 +27,7 @@ private:
 	string[2] headMarkup;
 	string[2] dataMarkup;
 	string[2] cursorMarkup;
-	int hsep = 2;
+	int hsep = 4;
 	ulong[] max;
 	int[] changedMax;
 	int separation = 2;
@@ -55,11 +56,12 @@ public:
 		sep = " ".replicate(separation);
 		max.length = data[0].length;
 
-		super(Orientation.VERTICAL, hsep);
+		super();
 		setHalign(Align.CENTER);
 		setBorderWidth(8);
+		setRowSpacing(hsep);
 
-		foreach (idx, d; data) {
+		foreach (d; data) {
 			addRow(d);
 		}
 	}
@@ -124,11 +126,9 @@ public:
 			rbs = rbs[0..position] ~ rbs[position + 1..$];
 			data = data[0..position] ~ data[position + 1..$];
 			datax = datax[0..position] ~ datax[position + 1..$];
-
-			//children[position].destroy();
-			remove(children[position]);
-			//children = children[0..position] ~ children[position + 1..$];
-
+			
+			removeRow(position);
+			
 			for (int i = 0; i < rbs.length; i++) {
 				rbs[i].setName(to!string(i));
 			}
@@ -170,15 +170,14 @@ public:
 	}
 
 	void addRow(string[] rdata) {
-		auto rb = new RowBox(rdata, cast(int)rbs.length, this);
+		auto rb = new RowBox(rdata, this);
 		changedMax = rb.changedMax;
 		rbs ~= rb;
-		add(rb);
+		//add(rb);
+		attach(rb, 0, cast(int)datax.length, 1, 1);
 		data ~= rb.data;
 		datax ~= rb.datax;
 		updateChanged();
-
-		showAll();
 	}
 
 	private void updateCursor() {
@@ -227,7 +226,9 @@ class RowBox : Box {
 	Label[] labels;
 	int[] changedMax;
 
-	this(string[] d, int idx, MBox mb) {
+	this(string[] d, MBox mb) {
+		auto idx = cast(int) mb.rbs.length;
+
 		super(Orientation.HORIZONTAL, mb.hsep);
 		setName(to!string(idx));
 		data = d.dup;
@@ -269,6 +270,8 @@ class RowBox : Box {
 				//writeln("button pressed at header");
 			}
 			return false;
-		});		
+		});
+
+		showAll();
 	}
 }

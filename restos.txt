@@ -270,3 +270,11 @@
 //			
 //			writeln(rbs.length, data.length, datax.length, children.length);
 
+
+			//auto widget = children[position];
+			//children[position].unrealize();
+			//children[position].destroy();
+			//remove(children[position]);
+			//widget.unrealize();
+			//children = children[0..position] ~ children[position + 1..$];
+
