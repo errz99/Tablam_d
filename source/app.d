@@ -134,7 +134,7 @@ class MainBox : Box {
 		add(headText);
 
 		add(mbox);
-		writeln(mbox.getRow(0));
+		//writeln(mbox.getRow(0));
 
 		auto close = new Button("Close");
 		packEnd(close, false, false, 0);

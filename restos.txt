@@ -142,3 +142,131 @@
 		//if ((_hasHead && rows.length > start) || (!_hasHead && rows.length > start)) {
 
 
+//	private string[] dataxForRow(ref string[] rdata) {
+//		auto sep = " ".replicate(separation);
+//		int[] changedMax = updateMax([rdata]);
+//
+//		string[] row;
+//		for (int j = 0; j < rdata.length; j++) {
+//			row ~= newElemx(rdata[j], max[j]);
+//		}
+//
+//		foreach (cm; changedMax) {
+//			writeln(cm);
+//			int j;
+//			while (j < _data.length) {
+//				auto elemgr = _data[j][cm].byGrapheme;
+//				ulong grow = max[cm] - elemgr.walkLength;
+//				string elemx = sep ~ _data[j][cm] ~ " ".replicate(grow) ~ sep;
+//				_datax[j][cm] = elemx;
+//				applyMarkup(j, cm, elemx);
+//				++j;
+//			}
+//		}
+//		return row;
+//	}
+
+
+//	private string newElemx(ref string elem, ulong max) {
+//		auto sep = " ".replicate(separation);
+//		auto elemgr = elem.byGrapheme;
+//		ulong grow = max - elemgr.walkLength;
+//		return sep ~ elem ~ " ".replicate(grow) ~ sep;
+//	}
+
+//	private int[] updateMax(string[][] data) {
+//		int[] changedMax;
+//
+//		for (int j = 0; j < max.length; j++) {
+//			for (int i = 0; i < data.length; i++) {
+//				auto elemgr = data[i][j].byGrapheme;
+//				if (elemgr.walkLength > max[j]) {
+//					max[j] = elemgr.walkLength;
+//					changedMax ~= j;
+//				}
+//			}
+//		}
+//		return changedMax;
+//	}
+
+//	private void initialDatax() {
+//		if (_data.length == 0) {
+//			return;
+//		}
+//
+//		max.length = _data[0].length;
+//		updateMax(_data);
+//		int i;
+//		while (i < _data.length) {
+//			string[] row;
+//
+//			for (int j = 0; j < _data[i].length; j++) {
+//				row ~= newElemx(_data[i][j], max[j]);
+//			}
+//			_datax ~= row;
+//			++i;
+//		}
+//	}
+
+//	private void processRow(ref string[] rdatax, int idx) {
+//		auto row = new Box(Orientation.HORIZONTAL, hsep);
+//		row.setName(to!string(idx));
+//		add(row);
+//
+//		row.addOnButtonPress(delegate bool(Event e, Widget w) {
+//			auto eb = e.button();
+//			auto name = row.getName();
+//
+//			if (to!int(name) > outPosition) {
+//				if (e.isDoubleClick(eb)) {
+//				} else if (position != to!int(name)) {
+//					lastPosition = position;
+//					position = to!int(name);
+//					updateCursor();
+//				}
+//			} else {
+//				//writeln("button pressed at header");
+//			}
+//			return false;
+//		});
+//
+//		Label[] rowLabels;
+//		foreach (ref elemx; rdatax) {
+//			auto ebox = new EventBox();
+//			row.add(ebox);
+//			auto label = new Label(elemx);
+//			label.setMarkup(dataMarkup[0] ~ elemx ~ dataMarkup[1]);
+//			ebox.add(label);
+//			rowLabels ~= label;
+//		}
+//		rows ~= row;
+//		labels ~= rowLabels;
+//	}
+
+
+//		int len = cast(int) rbs.length;
+//		int x = 1;
+//		for (int i = outPosition + 1; i < rbs.length; i++) {
+//			int z = len - x;
+//			for (int j = 0; j < rbs[z].labels.length; j++) {
+//				applyMarkup(i, j, rbs[z].datax[j]);
+//
+//			}
+//			x++;
+//		}
+
+
+	void deleteActiveRow() {
+		//if (rbs.length > outPosition + 1) {	
+		if (position > outPosition && position < rbs.length) {			
+//			rbs = [];
+//			data = [];
+//			datax = [];
+//			
+//			foreach (child; children) {
+//				child.destroy();
+//			}	
+//			children = [];
+//			
+//			writeln(rbs.length, data.length, datax.length, children.length);
+
