@@ -278,3 +278,16 @@
 			//widget.unrealize();
 			//children = children[0..position] ~ children[position + 1..$];
 
+			//datax ~= mb.sep ~ data[i] ~ " ".replicate(grow) ~ mb.sep;
+
+//			if (mb.halign == "left") {
+//				datax ~= mb.sep ~ data[i] ~ " ".replicate(grow) ~ mb.sep;
+//			} else if (mb.halign == "rigth") {
+//				datax ~= mb.sep ~ " ".replicate(grow) ~ data[i] ~ mb.sep;
+//			}	
+
+//				if (halign == "left") {
+//					elemx = sep ~ rbs[j].data[cm] ~ " ".replicate(grow) ~ sep;
+//				} else if (halign == "rigth") {
+//					elemx = sep ~ " ".replicate(grow) ~ rbs[j].data[cm] ~ sep;
+//				}	

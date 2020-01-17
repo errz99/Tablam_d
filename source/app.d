@@ -1,4 +1,5 @@
 import std.stdio;
+import std.typecons;
 import std.conv;
 import std.random;
 
@@ -50,7 +51,9 @@ class MainWin : MainWindow {
 		setDefaultSize(600, 400);
 		keymap = Keymap.getDefault();
 		addOnKeyPress(&onKeyPress);
-		mbox = new MBox(mbData, true);
+
+		auto aligns = ["rigth", "left", "left", "left"];
+		mbox = new MBox(mbData, true, aligns);
 		mbox.setCursorMarkup(cma, cmb);
 
 		addOnScroll(delegate bool(Event e, Widget w) {

@@ -32,9 +32,10 @@ private:
 	int[] changedMax;
 	int separation = 1;
 	auto sep = " ";
+	string[] aligns;
 
 public:
-	this(string[][] data, bool hasHead) {
+	this(string[][] data, bool hasHead, string[] algns = []) {
 		string hma = "<span><tt><b>";
 		string hmb = "</b></tt></span>";
 		string dma = "<span background=\"white\"><tt>";
@@ -56,6 +57,15 @@ public:
 		sep = " ".replicate(separation);
 		max.length = data[0].length;
 
+		if (algns == []) {
+			aligns.length = data[0].length;
+			foreach (ref ha; aligns) {
+				ha = "right";
+			}
+		} else {
+			aligns = cast(string[])algns;
+		}
+
 		super();
 		setHalign(Align.CENTER);
 		setBorderWidth(8);
@@ -76,6 +86,10 @@ public:
 
 	void setCursorMarkup(string a, string b) {
 		cursorMarkup = [a, b];
+	}
+
+	void setElemAlign(int i, string halign) {
+		aligns[i] = halign;
 	}
 
 	void cursorDown() {
@@ -185,7 +199,6 @@ public:
 		auto rb = new RowBox(rdata, this);
 		changedMax = rb.changedMax;
 		rbs ~= rb;
-		//add(rb);
 		attach(rb, 0, cast(int)datax.length, 1, 1);
 		data ~= rb.data;
 		datax ~= rb.datax;
@@ -213,11 +226,22 @@ public:
 			while (j < rbs.length) {
 				auto elemgr = rbs[j].data[cm].byGrapheme;
 				ulong grow = max[cm] - elemgr.walkLength;
-				string elemx = sep ~ rbs[j].data[cm] ~ " ".replicate(grow) ~ sep;
+				auto elemx = createX(rbs[j].data[cm], cm, grow);
+
 				rbs[j].datax[cm] = elemx;
 				applyMarkup(j, cm, elemx);
 				++j;
 			}
+		}
+	}
+
+	private string createX(string elem, int i, ulong grow) {
+		if (aligns[i] == "left") {
+			return sep ~ elem ~ " ".replicate(grow) ~ sep;
+		} else if (aligns[i] == "rigth") {
+			return sep ~ " ".replicate(grow) ~ elem ~ sep;
+		} else {
+			return sep ~ elem ~ " ".replicate(grow) ~ sep;
 		}
 	}
 
@@ -254,7 +278,7 @@ class RowBox : Box {
 			}
 
 			ulong grow = mb.max[i] - elemgr.walkLength;
-			datax ~= mb.sep ~ data[i] ~ " ".replicate(grow) ~ mb.sep;
+			datax ~= mb.createX(data[i], i, grow);
 		}
 
 		foreach (ref elemx; datax) {
