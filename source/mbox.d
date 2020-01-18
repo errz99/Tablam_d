@@ -63,7 +63,7 @@ public:
 				ha = "right";
 			}
 		} else {
-			aligns = cast(string[])algns;
+			aligns = algns;
 		}
 
 		super();
@@ -238,8 +238,16 @@ public:
 	private string createX(string elem, int i, ulong grow) {
 		if (aligns[i] == "left") {
 			return sep ~ elem ~ " ".replicate(grow) ~ sep;
+
 		} else if (aligns[i] == "rigth") {
 			return sep ~ " ".replicate(grow) ~ elem ~ sep;
+
+		} else if (aligns[i] == "center") {
+			ulong a = grow / 2;
+			ulong b = grow / 2;
+			if (grow % 2 != 0) { b++; }			
+			return sep ~ " ".replicate(a) ~ elem ~ " ".replicate(b) ~ sep;
+
 		} else {
 			return sep ~ elem ~ " ".replicate(grow) ~ sep;
 		}

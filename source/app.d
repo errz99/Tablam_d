@@ -52,7 +52,7 @@ class MainWin : MainWindow {
 		keymap = Keymap.getDefault();
 		addOnKeyPress(&onKeyPress);
 
-		auto aligns = ["rigth", "left", "left", "left"];
+		auto aligns = ["rigth", "left", "center", "left"];
 		mbox = new MBox(mbData, true, aligns);
 		mbox.setCursorMarkup(cma, cmb);
 
