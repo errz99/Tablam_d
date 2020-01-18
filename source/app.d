@@ -13,12 +13,12 @@ import gdk.Event;
 import gdk.Keymap;
 import mbox;
 
-string hma = "<span foreground=\"black\" background=\"white\" size=\"medium\"><tt><b>";
-string hmb = "</b></tt></span>";
-string dma = "<span foreground=\"blue\" background=\"white\" size=\"medium\"><tt>";
-string dmb = "</tt></span>";
-string cma = "<span foreground=\"black\" background=\"yellow\" size=\"medium\"><tt>";
-string cmb = "</tt></span>";
+const string hma = "<span foreground=\"black\" background=\"white\" size=\"medium\"><tt><b>";
+const string hmb = "</b></tt></span>";
+const string dma = "<span foreground=\"blue\" background=\"white\" size=\"medium\"><tt>";
+const string dmb = "</tt></span>";
+const string cma = "<span foreground=\"black\" background=\"yellow\" size=\"medium\"><tt>";
+const string cmb = "</tt></span>";
 
 void main(string[] args) {
 
@@ -115,16 +115,20 @@ class MainWin : MainWindow {
 				mbox.deleteActiveRow();
 				break;
 			case "Insert":
-				auto r = uniform(0, 255, rnd);
-				auto y = uniform(2000, 2020, rnd);
-				auto m = uniform(1, 13, rnd);
-				auto d = uniform(1, 29, rnd);
-				auto date = to!string(y) ~ "/" ~ to!string(m) ~ "/" ~ to!string(d);
-				auto url = "www." ~ to!string(r) ~ ".com";
-				mbox.addRow([date, "Mi veloz router", url, "Acceso all router de casa"]);
+				mbox.addRow(modify(["20190101", "Mi veloz router",
+					"www.here.com", "Acceso all router de casa"]));
 				break;
 			case "F12":
 				mbox.reverseData();
+				break;
+			case "e":
+				if (eventKey.state & ModifierType.CONTROL_MASK) {
+					auto toEdit = mbox.activeData();
+					if ( toEdit != []) {
+						auto edited = modify(toEdit);
+						mbox.editActiveRow(edited);
+					}
+				}
 				break;
 			default:
 				writeln("New: ", key);
@@ -133,6 +137,18 @@ class MainWin : MainWindow {
 
 		return true;
 	}
+
+	private string[] modify(string[] str) {
+		auto r = uniform(0, 255, rnd);
+		auto y = uniform(2000, 2020, rnd);
+		auto m = uniform(1, 13, rnd);
+		auto d = uniform(1, 29, rnd);
+		auto date = to!string(y) ~ "/" ~ to!string(m) ~ "/" ~ to!string(d);
+		auto url = "www." ~ to!string(r) ~ ".com";
+		str[0] = date;
+		str[2] = url;
+		return str;
+	}
 }
 
 class MainBox : Box {
@@ -140,12 +156,11 @@ class MainBox : Box {
 		super(Orientation.VERTICAL, 0);
 
 		auto headText = new Label("Ejemplo");
+		headText.setMarkup("<span foreground=\"green\"><b>Ejemplo</b></span>");
 		headText.setMarginTop(8);
-		headText.setMarginBottom(8);
 		add(headText);
 
 		add(mbox);
-		//writeln(mbox.getRow(0));
 
 		auto close = new Button("Close");
 		packEnd(close, false, false, 0);

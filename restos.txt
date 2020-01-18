@@ -291,3 +291,20 @@
 //				} else if (halign == "rigth") {
 //					elemx = sep ~ " ".replicate(grow) ~ rbs[j].data[cm] ~ sep;
 //				}	
+
+//				for (int i = 0; i < rbs[0].labels.length; i++) {
+//					rbs[position].labels[i].setMarkup(
+//						cursorMarkup[0] ~ rbs[position].datax[i] ~ cursorMarkup[1]);
+//				}
+
+//		foreach (i, ed; edata) {
+//			auto elemgr = ed.byGrapheme;
+//
+//			if (elemgr.walkLength > max[cast(int)i]) {
+//				max[cast(int)i] = elemgr.walkLength;
+//				changedMax ~= cast(int)i;
+//			}
+//
+//			ulong grow = max[i] - elemgr.walkLength;
+//			edatax ~= createX(ed, cast(int)i, grow);
+//		}	
