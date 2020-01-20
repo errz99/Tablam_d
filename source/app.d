@@ -11,7 +11,8 @@ import gtk.Label;
 import gtk.Button;
 import gdk.Event;
 import gdk.Keymap;
-import mbox;
+
+import tablam;
 
 const string hma = "<span foreground=\"black\" background=\"white\" size=\"medium\"><tt><b>";
 const string hmb = "</b></tt></span>";
@@ -41,7 +42,7 @@ void main(string[] args) {
 
 class MainWin : MainWindow {
 	Keymap keymap;
-	MBox mbox;
+	Tablam tab;
 	auto rnd = Random(42);
 
 	this(string[][] mbData) {
@@ -53,32 +54,32 @@ class MainWin : MainWindow {
 		addOnKeyPress(&onKeyPress);
 
 		auto aligns = ["rigth", "left", "center", "left"];
-		mbox = new MBox(mbData, true, aligns);
-		mbox.setCursorMarkup(cma, cmb);
+		tab = new Tablam(mbData, true, aligns);
+		tab.setCursorMarkup(cma, cmb);
 
 		addOnScroll(delegate bool(Event e, Widget w) {
 			writeln("scroll event");
 			return true;
 		});
 
-		mbox.addOnButtonPress(delegate bool(Event e, Widget w) {
+		tab.addOnButtonPress(delegate bool(Event e, Widget w) {
 			auto eb = e.button();
 
 			if (e.isDoubleClick(eb)) {
-				writeln("mbox double check: get row data");
-				if (mbox.activeData() != []) {
-					writeln(mbox.activeData());
+				writeln("tab double check: get row data");
+				if (tab.activeData() != []) {
+					writeln(tab.activeData());
 				} else {
 					writeln("no data active");
 				}
 
 			} else {
-				//writeln("mbox single check: get position");
+				//writeln("tab single check: get position");
 			}
 			return true;
 		});
 
-		add(new MainBox(mbData, mbox, this));
+		add(new MainBox(mbData, tab, this));
 		showAll();
 	}
 
@@ -92,41 +93,41 @@ class MainWin : MainWindow {
 
 		switch (key) {
 			case "Up":
-				mbox.cursorUp();
+				tab.cursorUp();
 				break;
 			case "Down":
-				mbox.cursorDown();
+				tab.cursorDown();
 				break;
 			case "Escape":
-				if (mbox.cursorIsActive()) {
-					mbox.clearCursor();
+				if (tab.cursorIsActive()) {
+					tab.clearCursor();
 				} else {
 					mainQuit();
 				}
 				break;
 			case "Return":
-				if (mbox.activeData() != []) {
-					writeln(mbox.activeData());
+				if (tab.activeData() != []) {
+					writeln(tab.activeData());
 				} else {
 					writeln("no data active");
 				}
 				break;
 			case "Delete":
-				mbox.deleteActiveRow();
+				tab.deleteActiveRow();
 				break;
 			case "Insert":
-				mbox.addRow(modify(["20190101", "Mi veloz router",
+				tab.addRow(modify(["20190101", "Mi veloz router",
 					"www.here.com", "Acceso all router de casa"]));
 				break;
 			case "F12":
-				mbox.reverseData();
+				tab.reverseData();
 				break;
 			case "e":
 				if (eventKey.state & ModifierType.CONTROL_MASK) {
-					auto toEdit = mbox.activeData();
+					auto toEdit = tab.activeData();
 					if ( toEdit != []) {
 						auto edited = modify(toEdit);
-						mbox.editActiveRow(edited);
+						tab.editActiveRow(edited);
 					}
 				}
 				break;
@@ -152,7 +153,7 @@ class MainWin : MainWindow {
 }
 
 class MainBox : Box {
-	this(string[][] mbData, MBox mbox, MainWin mwin) {
+	this(string[][] mbData, Tablam tab, MainWin mwin) {
 		super(Orientation.VERTICAL, 0);
 
 		auto headText = new Label("Ejemplo");
@@ -160,7 +161,7 @@ class MainBox : Box {
 		headText.setMarginTop(8);
 		add(headText);
 
-		add(mbox);
+		add(tab);
 
 		auto close = new Button("Close");
 		packEnd(close, false, false, 0);

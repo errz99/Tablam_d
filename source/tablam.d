@@ -22,7 +22,7 @@ const string dmb = "</tt></span>";
 const string cma = "<span foreground=\"white\" background=\"#6666dd\"><tt>";
 const string cmb = "</tt></span>";
 
-class MBox : Grid {
+class Tablam : Grid {
 private:
 	bool _hasHead;
 	RowBox[] rbs;
@@ -297,31 +297,31 @@ class RowBox : Box {
 	Label[] labels;
 	int[] changedMax;
 
-	this(string[] d, MBox mb) {
-		auto idx = cast(int) mb.rbs.length;
-		super(Orientation.HORIZONTAL, mb.hsep);
+	this(string[] d, Tablam tab) {
+		auto idx = cast(int) tab.rbs.length;
+		super(Orientation.HORIZONTAL, tab.hsep);
 		setName(to!string(idx));
 		data = d.dup;
 
-		//datax = mb.newX(data);
+		//datax = tab.newX(data);
 
 		for (int i = 0; i < data.length; i++) {
 			auto elemgr = data[i].byGrapheme;
 
-			if (elemgr.walkLength > mb.max[i]) {
-				mb.max[i] = elemgr.walkLength;
+			if (elemgr.walkLength > tab.max[i]) {
+				tab.max[i] = elemgr.walkLength;
 				changedMax ~= i;
 			}
 
-			ulong grow = mb.max[i] - elemgr.walkLength;
-			datax ~= mb.createX(data[i], i, grow);
+			ulong grow = tab.max[i] - elemgr.walkLength;
+			datax ~= tab.createX(data[i], i, grow);
 		}
 
 		foreach (ref elemx; datax) {
 			auto ebox = new EventBox();
 			add(ebox);
 			auto label = new Label(elemx);
-			label.setMarkup(mb.dataMarkup[0] ~ elemx ~ mb.dataMarkup[1]);
+			label.setMarkup(tab.dataMarkup[0] ~ elemx ~ tab.dataMarkup[1]);
 			ebox.add(label);
 			labels ~= label;
 		}
@@ -330,13 +330,13 @@ class RowBox : Box {
 			auto eb = e.button();
 			auto name = getName();
 
-			if (to!int(name) > mb.outPosition) {
+			if (to!int(name) > tab.outPosition) {
 				if (e.isDoubleClick(eb)) {
 					//
-				} else if (mb.position != to!int(name)) {
-					mb.lastPosition = mb.position;
-					mb.position = to!int(name);
-					mb.updateCursor();
+				} else if (tab.position != to!int(name)) {
+					tab.lastPosition = tab.position;
+					tab.position = to!int(name);
+					tab.updateCursor();
 				}
 			} else {
 				//writeln("button pressed at header");
