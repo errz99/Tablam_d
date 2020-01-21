@@ -308,3 +308,28 @@
 //			ulong grow = max[i] - elemgr.walkLength;
 //			edatax ~= createX(ed, cast(int)i, grow);
 //		}	
+
+
+////////////////////////////////
+
+//import gtk.StyleContext;
+//import gtk.CssProvider;
+
+//class CSS {
+//	CssProvider provider;
+//	string cssPath = "./css/common.css";
+//
+//	this(StyleContext styleContext)	{
+//		provider = new CssProvider();
+//		provider.loadFromPath(cssPath);
+//		styleContext.addProvider(provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);		
+//	}	
+//}
+
+	//CSS css;
+
+		//css = new CSS(getStyleContext());
+
+		//css = new CSS(label.getStyleContext());
+
+////////////////////////////////

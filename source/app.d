@@ -11,6 +11,8 @@ import gtk.Label;
 import gtk.Button;
 import gdk.Event;
 import gdk.Keymap;
+import gtk.StyleContext;
+import gtk.CssProvider;
 
 import tablam;
 
@@ -44,6 +46,7 @@ class MainWin : MainWindow {
 	Keymap keymap;
 	Tablam tab;
 	auto rnd = Random(42);
+	CSS css;
 
 	this(string[][] mbData) {
 		super("mBox Test");
@@ -52,6 +55,8 @@ class MainWin : MainWindow {
 		setDefaultSize(600, 400);
 		keymap = Keymap.getDefault();
 		addOnKeyPress(&onKeyPress);
+
+		css = new CSS(getStyleContext());
 
 		auto aligns = ["rigth", "left", "center", "left"];
 		tab = new Tablam(mbData, true, aligns);
@@ -164,8 +169,20 @@ class MainBox : Box {
 		add(tab);
 
 		auto close = new Button("Close");
+		close.setName("close");
 		packEnd(close, false, false, 0);
 
 		close.addOnClicked(delegate void(Button b) { mwin.mainQuit(); });
+	}
+}
+
+class CSS {
+	CssProvider provider;
+	string cssData = "window { font-size: 16px; }";
+
+	this(StyleContext styleContext)	{
+		provider = new CssProvider();
+		provider.loadFromData(cssData);
+		styleContext.addProvider(provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	}
 }
